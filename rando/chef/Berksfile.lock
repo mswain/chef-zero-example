@@ -1,0 +1,8 @@
+DEPENDENCIES
+  rando
+    path: cookbooks/rando
+
+GRAPH
+  mysql (8.2.0)
+  rando (0.1.0)
+    mysql (= 8.2.0)

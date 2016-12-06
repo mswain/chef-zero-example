@@ -1,0 +1,2 @@
+module CoolHelper
+end

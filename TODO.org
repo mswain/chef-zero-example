@@ -1,0 +1,77 @@
+* Introduction
+** Talk inspired by discussion in the austin.rb channel
+** A lot of new tools around chef, but still a ton of outdated docs
+** Say you have a rails app that needs mysql + redis? how do you get started with chef?
+** How can you use it to prep a dev environment? Can you do so in such a way that will help you support production?
+* Background, Chef Basics
+** What is Chef?
+*** Configuration Management tool that's been around for 7 years. Currently on version 12.11 as of this writing.
+*** DSL that makes it easier to automate installing, updating, and configuring servers
+*** A vibrant and enthusiastic community
+**** automate many common apps and share them
+**** Release linting tools, specs, dependency managers, etc
+** Chef Basics
+*** Architecture
+**** client
+***** runs on machine to be managed
+***** connects to chef server for config elements
+***** executes / applies config elements
+**** server - stores config elements
+***** stores config elements
+***** receives connections from clients
+*** Resources - DSL abstractions of common "things" you'll find on a server.
+**** Pacakges - install pacakges (deb on ubuntu, rpm on RHEL, etc)
+**** Files - (can be static or built from ERB templates)
+**** Scripts - bits of code to be run on the servers managed by chef
+*** Attributes - variables available for access / rendering in resources
+*** Recipes - Bundle resources together in to one configuration "unit" 
+**** For example, you may have a recipe called redis that will include the redis package and its config file
+**** get "executed" on client
+*** Libraries - ruby to extend chef, create custom resources beyond what is built in, etc
+*** Definitions - "macros" that bundle together several resources in an easy to use chunk
+*** Cookbooks - Bundle together recipes, resources, libraries, definitions, and attributes in a single, ideally self-contained, re-usable unit.
+*** Roles - lists of recipes and attributes that will be applied to a specific client
+*** Knife - command line tool for interacting w/ the chef server
+** Chef Solo vs Chef Zero
+*** Solo - the OG "chef" runs against a lot of files on the filesystem.
+*** Zero - simulates a chef server entirely in memory.
+* Getting started the "easy" way
+** The setup
+*** Rails app
+*** redis
+*** mysql
+** The tools
+*** chef-zero
+*** berkshelf
+*** vagrant
+*** digital ocean
+** Example rails app
+*** rails + mysql 
+*** CoolController
+**** one action 'index'
+**** sets redis key 'super' to value 'cool'
+**** fetches redis key 'super' and renders the value
+** What I want
+*** I want redis, mysql, ruby, rubygems, bundler
+*** I want to create the db if it doesn't exist
+*** I want this to work in vagrant and DigitalOcean, ubuntu xenial 64 bit
+** What I have
+*** simple vagrant file that does nothing but install xenial64 and forward port 3000
+** How do I get there?
+*** Install chefdk (in vagrant, on D.O. Server)
+**** wget https://packages.chef.io/stable/ubuntu/12.04/chefdk_1.0.3-1_amd64.deb
+**** sudo dpkg -i chefdk_1.0.3-1_amd64.deb
+*** Create a chef "repo" (I'll be doing this inside the app I've created)
+**** cd /path/to/rando.app; chef generate repo chef
+*** create a chef cookbook for your app
+**** cd chef/cookbooks; chef generate cookbook rando
+**** add your apps dependecies to your apps cookbook's metadata.rb
+*** Create a Berksfile
+**** Tell your berks file to source "metadata" from your cookbooks
+*** modify your apps' metadata to depend on the "mysql" recipe
+*** modify your app's recipe to setup ruby, mysqld, mysql client, bundler, redis
+*** once you're done, cd into your app's chef repo dir and run "sudo chef-client -z -o rando"
+*** at this point your app will be runnable.
+*** git checkout this on digital ocean and simply run "sudo chef-client -z -o rando" in the chef directory
+*** Want to really go prod? your chef repo directoy is your starting point!
+
